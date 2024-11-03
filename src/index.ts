@@ -38,6 +38,7 @@ const run = async () => {
 
   // ! 1. take a snapshot of the web
   const primeMenuData = await page.evaluate(async () => {
+    // ! smoothScroll to load all data
     const smoothScrollToBottom = async () => {
       let scrollPosition = 0;
       let documentHeight = document.body.scrollHeight;
@@ -60,12 +61,21 @@ const run = async () => {
 
     await new Promise((resolve) => setTimeout(resolve, 200));
 
+    // get all header
     const div = document.querySelectorAll("h2[role='heading']");
     console.log("div : ", div);
     const innerText = [];
     for (const child of div) {
       innerText.push(child.textContent.trim());
       console.log(child.textContent.trim());
+    }
+
+    const div2 = document.querySelectorAll("div[id='menu-list-section']");
+    console.log("div2 : ", div2);
+    const innerText2 = [];
+    for (const child2 of div2) {
+      innerText.push(child2.textContent.trim());
+      console.log(child2.textContent.trim());
     }
 
     return innerText;
