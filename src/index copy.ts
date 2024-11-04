@@ -62,7 +62,7 @@ const run = async () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
 
     // get all header
-    const div = document.querySelectorAll("div[id='category-section']");
+    const div = document.querySelectorAll("h2[role='heading']");
 
     console.log("div : ", div);
     const innerText = [];
@@ -84,7 +84,7 @@ const run = async () => {
   foodHubMenuData.push(...primeMenuData);
 
   // ! Get all Heading and clicking them one by one
-  const getAllElement = await page.$$("div[id='category-section'] h2[role='heading']");
+  const getAllElement = await page.$$("h2[role='heading']");
   for (const element of getAllElement) {
     element.click();
     console.log("element clicked ", await (await element.getProperty("textContent")).jsonValue());
