@@ -220,19 +220,20 @@ const run = async () => {
       return menuData;
     });
     await new Promise((resolve) => setTimeout(resolve, 200));
-    foodHubMenuData2.push(scripPrimeMenuData);
+    // update foodHubMenuData as keys Name
+    Object.keys(scripPrimeMenuData).forEach((keysName) => {
+      foodHubMenuData = foodHubMenuData.map((curr) => {
+        let i = curr;
+        if (curr[keysName]) {
+          i[keysName] = scripPrimeMenuData[keysName];
+        }
+        return i;
+      });
+    });
   }
 
   //   ! Save data to menu.json
   fs.writeFile("menu.json", JSON.stringify(foodHubMenuData), (err) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    console.log("Data saved to menu.json");
-  });
-  //   ! Save data to menu.json
-  fs.writeFile("menu2.json", JSON.stringify(foodHubMenuData2), (err) => {
     if (err) {
       console.error(err);
       return;
