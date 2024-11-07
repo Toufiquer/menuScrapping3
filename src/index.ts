@@ -80,12 +80,12 @@ const run = async () => {
 
   await new Promise((resolve) => setTimeout(resolve, 200));
   // ! Get all Heading and clicking them one by one
-  // const getAllElement = await page.$$("h2[role='heading']");
-  // for (const element of getAllElement) {
-  //   element.click();
+  const getAllElement = await page.$$("h2[role='heading']");
+  for (const element of getAllElement) {
+    await element.click();
 
-  //   console.log("element clicked ", await (await element.getProperty("textContent")).jsonValue());
-  // }
+    console.log("element clicked ", await (await element.getProperty("textContent")).jsonValue());
+  }
 
   //   ! Save data to menu.json
   fs.writeFile("menu.json", JSON.stringify(foodHubMenuData), (err) => {
