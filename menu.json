@@ -1,1 +1,26 @@
-["Vegetable Starters","Appetisers","Tandoori Grill","Raj Bari Signature Dishes","Masala Dishes","Vegetable Speciality","Vegetable Side Dishes","Accompaniments","Nan","Balti Dishes","Bhuna Dishes","Pathia Dishes","Rogan Josh Dishes","Dansak Dishes","Dupiaza Dishes","Madras Dishes","Vindaloo Dishes","Sri Lankan Dishes","Biryani Dishes","Malayan Dishes","Korma Dishes","Nan Wraps","Thali","Best Deals"]
+[
+  { "vegetable_starters": { "lst": [] } },
+  { "appetisers": { "lst": [] } },
+  { "tandoori_grill": { "lst": [] } },
+  { "raj_bari_signature_dishes": { "lst": [] } },
+  { "masala_dishes": { "lst": [] } },
+  { "vegetable_speciality": { "lst": [] } },
+  { "vegetable_side_dishes": { "lst": [] } },
+  { "accompaniments": { "lst": [] } },
+  { "nan": { "lst": [] } },
+  { "balti_dishes": { "lst": [] } },
+  { "bhuna_dishes": { "lst": [] } },
+  { "pathia_dishes": { "lst": [] } },
+  { "rogan_josh_dishes": { "lst": [] } },
+  { "dansak_dishes": { "lst": [] } },
+  { "dupiaza_dishes": { "lst": [] } },
+  { "madras_dishes": { "lst": [] } },
+  { "vindaloo_dishes": { "lst": [] } },
+  { "sri_lankan_dishes": { "lst": [] } },
+  { "biryani_dishes": { "lst": [] } },
+  { "malayan_dishes": { "lst": [] } },
+  { "korma_dishes": { "lst": [] } },
+  { "nan_wraps": { "lst": [] } },
+  { "thali": { "lst": [] } },
+  { "best_deals": { "lst": [] } }
+]

@@ -17,6 +17,7 @@ const rl = readline.createInterface({ input, output });
 // ! Start project
 const run = async () => {
   let foodHubMenuData = [];
+  let foodHubMenuData2 = [];
 
   //   ! get url
   const foodHubURL = "https://foodhub.co.uk/hillhead-pkwy/raj-bari-indian-takeawayrestaurant/ordernow";
@@ -64,11 +65,9 @@ const run = async () => {
     // get all header
     const div = document.querySelectorAll("h2[role='heading']");
 
-    console.log("div : ", div);
     const innerText = [];
     for (const child of div) {
-      innerText.push(child.textContent.trim());
-      console.log(child.textContent.trim());
+      innerText.push({ [child.textContent.trim().toLowerCase().replaceAll(" ", "_")]: { lst: [] } });
     }
     innerText.shift(); // remove heading of the webpage
     innerText.shift(); // remove subtitle of the webpage
@@ -85,10 +84,155 @@ const run = async () => {
     await element.click();
 
     console.log("element clicked ", await (await element.getProperty("textContent")).jsonValue());
+
+    const scripPrimeMenuData = await page.evaluate(async () => {
+      // ! get content data
+      const primeScrappingData = document.querySelectorAll("div[data-testid='AK_menu_screen_accordion_wrapper']");
+
+      const getNodeElements = (arrOfNodeElement) => {
+        let filterElementNodes = [];
+        for (const child of arrOfNodeElement) {
+          if (child.nodeType !== 8) {
+            // This filters out comments (nodeType 8)
+            const filterChild = {
+              childElementCount: "",
+              children: "",
+              innerText: "",
+              tagName: "",
+              textContent: "",
+            };
+            for (const c in child) {
+              if (child[c] !== null) {
+                filterChild[c] = child[c];
+              }
+            }
+            const newChild = {
+              childElementCount: filterChild.childElementCount,
+              children: filterChild.children,
+              innerText: filterChild.innerText,
+              tagName: filterChild?.tagName,
+              textContent: filterChild.textContent,
+              // selfNode: filterChild,
+              classList: filterChild.classList,
+            };
+            filterElementNodes.push({ ...newChild });
+          }
+        }
+        //   clear child nodes by self invoked
+        filterElementNodes = filterElementNodes.map((curr) => {
+          if (curr.childElementCount > 0) {
+            const filterChildren = getNodeElements(curr.children);
+            return {
+              ...curr,
+              children: filterChildren,
+            };
+          } else {
+            return curr;
+          }
+        });
+        return filterElementNodes
+          .filter((curr) => curr.innerText !== "")
+          .filter((curr) => curr.innerText !== undefined);
+      };
+
+      const mainElementData = getNodeElements(primeScrappingData);
+      const extractMenuData = (data) => {
+        let result = {};
+        // get Inner text
+        const getInnerText = (obj = { innerText: "", children: [] }, nthChild = 0) => {
+          if (obj.innerText?.includes("\n")) {
+            if (obj.children?.length > 0) {
+              return getInnerText(obj.children[nthChild]);
+            } else {
+              return obj.innerText;
+            }
+          }
+          return obj.innerText;
+        };
+
+        const getAllInnerItems = (data) => {
+          let allInnerItems = [];
+
+          if (Array.isArray(data)) {
+            data.forEach((dataCurr) => {
+              dataCurr.children[1]?.children[0]?.children[0]?.children[0]?.children[0]?.children[0]?.children[0]?.children?.forEach(
+                (curr) => {
+                  const item = [];
+                  if (curr.children[1]?.children?.length > 0) {
+                    curr.children[1].children.forEach((i) => item.push(i));
+                  } else if (curr.children[0]?.children?.length > 0) {
+                    curr.children[0].children.forEach((i) => item.push(i));
+                  }
+
+                  allInnerItems.push(...item);
+                }
+              );
+            });
+            // ! destructure data
+
+            allInnerItems = allInnerItems.map((curr) => {
+              let result = {};
+              const item = getInnerText(
+                curr.children[0]?.children[0]?.children[0]?.children[0]?.children[0]?.children[0]
+              );
+              const info = getInnerText(
+                curr.children[0]?.children[0]?.children[0]?.children[0]?.children[0]?.children[0]?.children[1]
+              );
+              const price = getInnerText(
+                curr.children[0]?.children[0]?.children[0]?.children[0]?.children[0]?.children[1]
+              );
+
+              if (item) {
+                result.item = item;
+              }
+              if (info) {
+                result.info = info;
+              }
+              if (price) {
+                result.price = price;
+              }
+              return result;
+            });
+          } else {
+            return getAllInnerItems([data]);
+          }
+          // filter empty items
+          allInnerItems = allInnerItems.filter((curr) => curr.item);
+          return allInnerItems;
+        };
+
+        if (Array.isArray(data)) {
+          data.forEach((parentItem) => {
+            parentItem.children?.forEach((curr) => {
+              let keyName = getInnerText(curr, 0);
+              keyName = keyName.toLowerCase().replace(" ", "_");
+              result[keyName] = { lst: getAllInnerItems(curr) };
+            });
+          });
+        } else {
+          return extractMenuData([data]);
+        }
+        return result;
+      };
+
+      const menuData = extractMenuData(mainElementData);
+
+      return menuData;
+    });
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    foodHubMenuData2.push(scripPrimeMenuData);
   }
 
   //   ! Save data to menu.json
   fs.writeFile("menu.json", JSON.stringify(foodHubMenuData), (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log("Data saved to menu.json");
+  });
+  //   ! Save data to menu.json
+  fs.writeFile("menu2.json", JSON.stringify(foodHubMenuData2), (err) => {
     if (err) {
       console.error(err);
       return;
